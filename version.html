@@ -27,26 +27,9 @@
       padding: 1rem;
       border-radius: 8px;
       border: 1px solid #ccc;
-      resize: vertical;
+      resize: none; /* tylko podgląd, brak edycji */
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .buttons {
-      margin-top: 1rem;
-    }
-    button {
-      background: #2d8cf0;
-      color: white;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      margin: 0 0.5rem;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-      box-shadow: 0 2px 8px rgba(44,140,240,0.2);
-    }
-    button:hover {
-      background: #1d7cd6;
+      background-color: #f9f9f9;
     }
     #status {
       margin-top: 1rem;
@@ -56,20 +39,23 @@
   </style>
 </head>
 <body>
-  <h1>Edytor plugins.json</h1>
-  <textarea id="editor"></textarea>
+  <h1>Podgląd plugins.json</h1>
+  <textarea id="editor" readonly></textarea>
   <div id="status"></div>
 
   <script>
     async function loadPlugins() {
-      document.getElementById("status").textContent = "Ładowanie...";
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = "Ładowanie...";
       try {
-        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/refs/heads/main/plugins.json");
+        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/main/plugins/plugins.json");
+        if (!res.ok) throw new Error("Nie udało się pobrać pliku");
         const data = await res.json();
         document.getElementById("editor").value = JSON.stringify(data, null, 2);
-        document.getElementById("status").textContent = "Załadowano ✅";
+        statusEl.textContent = "Załadowano ✅";
       } catch (e) {
-        document.getElementById("status").textContent = "Błąd ładowania ❌";
+        statusEl.textContent = "Błąd ładowania ❌";
+        console.error(e);
       }
     }
 
