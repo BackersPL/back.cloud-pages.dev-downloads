@@ -2,7 +2,7 @@ import { Octokit } from "octokit";
 
 const OWNER = "BackersPL"; // <- Twój nick GitHub
 const REPO = "back.cloud-pages.dev-downloads";        // <- nazwa repo, np. back-dev-downloads
-const FILE_PATH = "plugins.json";
+const FILE_PATH = "plugins/plugins.json";
 const BRANCH = "main";
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
