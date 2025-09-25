@@ -87,17 +87,11 @@
         const repoOwner = "BackersPL";
         const repoName = "back.cloud-pages.dev-downloads";
         const pluginsFolder = "plugins";
-        const token = "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";
 
         async function fetchPlugins() {
             const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${pluginsFolder}`;
             try {
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        Authorization: `token ${token}`,
-                        Accept: "application/vnd.github+json"
-                    }
-                });
+                const response = await fetch(apiUrl);
                 if (!response.ok) throw new Error("Unable to load plugins folder.");
                 const files = await response.json();
                 // Filtruj tylko .jar
