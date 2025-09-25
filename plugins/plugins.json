@@ -1,0 +1,4 @@
+[
+  { "name": "BackAuth.jar", "version": "1.2.3", "url": "plugins/BackAuth.jar" },
+  { "name": "OtherPlugin.jar", "version": "2.4.1", "url": "plugins/OtherPlugin.jar" }
+]
