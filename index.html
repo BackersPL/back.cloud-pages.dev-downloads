@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>back.cloud-pages.dev-downloads</title>
+    <title>back-dev-downloads</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         body {
@@ -13,13 +13,14 @@
             min-height: 100vh;
         }
         header {
-            background: #2d8cf0;
-            color: white;
+            background: #fff; /* taki sam kolor jak tło kontenera */
+            color: #333; /* taki sam kolor jak nazwy pluginów */
             padding: 2rem 0 1rem 0;
             text-align: center;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            box-shadow: 0 2px 8px rgba(44,140,240,0.12);
+            font-size: 1.1rem; /* taki sam font-size jak nazwy pluginów */
+            font-weight: 500;
+            letter-spacing: 0; /* usuwa duże odstępy jak w poprzednim headerze */
+            box-shadow: 0 4px 16px rgba(44,140,240,0.08); /* lekki cień jak kontener */
         }
         .container {
             max-width: 600px;
@@ -72,7 +73,7 @@
         }
         @media (max-width: 650px) {
             .container { padding: 1rem; }
-            header { font-size: 2rem; }
+            header { font-size: 1.1rem; padding: 1rem 0; }
         }
     </style>
 </head>
@@ -84,7 +85,6 @@
         <ul class="plugin-list" id="plugin-list"></ul>
     </div>
     <script>
-        // Pobieramy dane z lokalnego JSON
         async function fetchPlugins() {
             try {
                 const response = await fetch("plugins.json");
