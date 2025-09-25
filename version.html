@@ -59,7 +59,6 @@
   <h1>Edytor plugins.json</h1>
   <textarea id="editor"></textarea>
   <div class="buttons">
-    <button id="save">💾 Zapisz</button>
     <button id="reload">🔄 Odśwież</button>
   </div>
   <div id="status"></div>
@@ -77,22 +76,6 @@
       }
     }
 
-    async function savePlugins() {
-      const content = document.getElementById("editor").value;
-      document.getElementById("status").textContent = "Zapisywanie...";
-      try {
-        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/refs/heads/main/plugins.json", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content })
-        });
-        document.getElementById("status").textContent = await res.text();
-      } catch (e) {
-        document.getElementById("status").textContent = "Błąd zapisu ❌";
-      }
-    }
-
-    document.getElementById("save").addEventListener("click", savePlugins);
     document.getElementById("reload").addEventListener("click", loadPlugins);
 
     loadPlugins();
