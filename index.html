@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <title>back.cloud-pages.dev-downloads</title>
@@ -84,44 +84,38 @@
         <ul class="plugin-list" id="plugin-list"></ul>
     </div>
     <script>
-        const repoOwner = "BackersPL";
-        const repoName = "back.cloud-pages.dev-downloads";
-        const pluginsFolder = "plugins";
-
+        // Pobieramy dane z lokalnego JSON
         async function fetchPlugins() {
-            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${pluginsFolder}`;
             try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error("Unable to load plugins folder.");
-                const files = await response.json();
-                // Filter for .jar files only
-                const jarFiles = files.filter(file => file.type === "file" && file.name.endsWith(".jar"));
-                displayPlugins(jarFiles);
+                const response = await fetch("plugins.json");
+                if (!response.ok) throw new Error("Nie udało się załadować plugins.json");
+                const plugins = await response.json();
+                displayPlugins(plugins);
             } catch (err) {
-                document.getElementById("status").textContent = "Error loading plugins.";
+                document.getElementById("status").textContent = "Błąd przy ładowaniu pluginów.";
                 document.getElementById("status").className = "error";
             }
         }
 
-        function displayPlugins(jarFiles) {
+        function displayPlugins(plugins) {
             const list = document.getElementById("plugin-list");
             list.innerHTML = "";
-            if (jarFiles.length === 0) {
-                document.getElementById("status").textContent = "No plugins found.";
+            if (plugins.length === 0) {
+                document.getElementById("status").textContent = "Brak dostępnych pluginów.";
                 document.getElementById("status").className = "loading";
                 return;
             }
             document.getElementById("status").style.display = "none";
-            jarFiles.forEach(file => {
+            plugins.forEach(plugin => {
                 const li = document.createElement("li");
                 const name = document.createElement("span");
                 name.className = "plugin-name";
-                name.textContent = file.name;
+                name.textContent = `${plugin.name} - v${plugin.version}`;
                 const downloadLink = document.createElement("a");
                 downloadLink.className = "download-btn";
-                downloadLink.href = file.download_url;
+                downloadLink.href = plugin.url;
                 downloadLink.textContent = "Pobierz";
-                downloadLink.setAttribute("download", file.name);
+                downloadLink.setAttribute("download", plugin.name);
                 li.appendChild(name);
                 li.appendChild(downloadLink);
                 list.appendChild(li);
