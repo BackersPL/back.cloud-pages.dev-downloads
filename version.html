@@ -68,7 +68,7 @@
     async function loadPlugins() {
       document.getElementById("status").textContent = "Ładowanie...";
       try {
-        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/main/plugins/plugins.json");
+        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/refs/heads/main/plugins.json");
         const data = await res.json();
         document.getElementById("editor").value = JSON.stringify(data, null, 2);
         document.getElementById("status").textContent = "Załadowano ✅";
@@ -81,7 +81,7 @@
       const content = document.getElementById("editor").value;
       document.getElementById("status").textContent = "Zapisywanie...";
       try {
-        const res = await fetch("/api/plugins", {
+        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/refs/heads/main/plugins.json", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content })
