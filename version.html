@@ -68,7 +68,7 @@
     async function loadPlugins() {
       document.getElementById("status").textContent = "Ładowanie...";
       try {
-        const res = await fetch("/api/plugins");
+        const res = await fetch("https://raw.githubusercontent.com/BackersPL/back.cloud-pages.dev-downloads/main/plugins/plugins.json");
         const data = await res.json();
         document.getElementById("editor").value = JSON.stringify(data, null, 2);
         document.getElementById("status").textContent = "Załadowano ✅";
