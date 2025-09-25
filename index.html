@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Plugin Downloads</title>
+    <title>back.cloud-pages.dev-downloads</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
         body {
@@ -77,14 +77,13 @@
     </style>
 </head>
 <body>
-    <header>Plugin Downloads</header>
+    <header>Bakuś Plugins</header>
     <div class="container">
-        <h2>Available Plugins</h2>
-        <div id="status" class="loading">Loading plugins...</div>
+        <h2>Dostępne pluginy</h2>
+        <div id="status" class="loading">Ładowanie pluginów...</div>
         <ul class="plugin-list" id="plugin-list"></ul>
     </div>
     <script>
-        // Configuration
         const repoOwner = "BackersPL";
         const repoName = "back.cloud-pages.dev-downloads";
         const pluginsFolder = "plugins";
@@ -121,7 +120,7 @@
                 const downloadLink = document.createElement("a");
                 downloadLink.className = "download-btn";
                 downloadLink.href = file.download_url;
-                downloadLink.textContent = "Download";
+                downloadLink.textContent = "Pobierz";
                 downloadLink.setAttribute("download", file.name);
                 li.appendChild(name);
                 li.appendChild(downloadLink);
