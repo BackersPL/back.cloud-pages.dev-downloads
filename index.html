@@ -13,14 +13,13 @@
             min-height: 100vh;
         }
         header {
-            background: #fff; /* taki sam kolor jak tło kontenera */
-            color: #333; /* taki sam kolor jak nazwy pluginów */
+            background: #fff;
+            color: #333;
             padding: 2rem 0 1rem 0;
             text-align: center;
-            font-size: 2.5rem; /* taki sam font-size jak nazwy pluginów */
+            font-size: 2rem;
             font-weight: 500;
-            letter-spacing: 0; /* usuwa duże odstępy jak w poprzednim headerze */
-            box-shadow: 0 4px 16px rgba(44,140,240,0.08); /* lekki cień jak kontener */
+            box-shadow: 0 4px 16px rgba(44,140,240,0.08);
         }
         .container {
             max-width: 600px;
@@ -30,99 +29,122 @@
             box-shadow: 0 4px 16px rgba(44,140,240,0.08);
             padding: 2rem;
         }
-        h2 {
-            color: #2d8cf0;
-            margin-bottom: 1rem;
-        }
-        ul.plugin-list {
-            list-style: none;
-            padding: 0;
-        }
+        h2 { color: #2d8cf0; margin-bottom: 1rem; }
+        ul.plugin-list { list-style: none; padding: 0; }
         ul.plugin-list li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.2rem;
-            padding-bottom: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.2rem; padding-bottom: 1rem;
             border-bottom: 1px solid #f0f0f0;
         }
-        .plugin-name {
-            font-weight: 500;
-            font-size: 1.1rem;
-            color: #333;
-        }
+        .plugin-name { font-weight: 500; font-size: 1.1rem; color: #333; }
         .download-btn {
-            background: #2d8cf0;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 0.5rem 1.1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            font-size: 1rem;
-            text-decoration: none;
-            box-shadow: 0 2px 8px rgba(44,140,240,0.08);
+            background: #2d8cf0; color: #fff; border: none;
+            border-radius: 5px; padding: 0.5rem 1.1rem;
+            cursor: pointer; text-decoration: none;
         }
-        .download-btn:hover {
-            background: #1d7cd6;
-        }
-        .loading, .error {
-            text-align: center;
-            color: #999;
-            margin-top: 2rem;
-        }
-        @media (max-width: 650px) {
-            .container { padding: 1rem; }
-            header { font-size: 1.1rem; padding: 1rem 0; }
-        }
+        .download-btn:hover { background: #1d7cd6; }
+        .loading, .error { text-align: center; color: #999; margin-top: 2rem; }
+        form { display: flex; flex-direction: column; gap: 1rem; }
+        input, button { padding: 0.6rem; font-size: 1rem; }
+        button { background: #2d8cf0; color: white; border: none; cursor: pointer; }
+        button:hover { background: #1d7cd6; }
     </style>
 </head>
 <body>
-    <header>Lista pluginów</header>
-    <div class="container">
-        <h2>Dostępne pluginy</h2>
-        <div id="status" class="loading">Ładowanie pluginów...</div>
-        <ul class="plugin-list" id="plugin-list"></ul>
-    </div>
+    <header id="header"></header>
+    <div class="container" id="content"></div>
+
     <script>
-        async function fetchPlugins() {
-            try {
-                const response = await fetch("plugins.json");
-                if (!response.ok) throw new Error("Nie udało się załadować plugins.json");
-                const plugins = await response.json();
-                displayPlugins(plugins);
-            } catch (err) {
-                document.getElementById("status").textContent = "Błąd przy ładowaniu pluginów.";
-                document.getElementById("status").className = "error";
-            }
-        }
+        const path = window.location.pathname;
 
-        function displayPlugins(plugins) {
-            const list = document.getElementById("plugin-list");
-            list.innerHTML = "";
-            if (plugins.length === 0) {
-                document.getElementById("status").textContent = "Brak dostępnych pluginów.";
-                document.getElementById("status").className = "loading";
-                return;
+        if (path.includes("admion")) {
+            // 🔑 PANEL ADMINA
+            document.getElementById("header").textContent = "Panel administracyjny";
+            document.getElementById("content").innerHTML = `
+                <h2>Dodaj plugin</h2>
+                <form id="plugin-form">
+                    <input type="text" id="name" placeholder="Nazwa pluginu" required>
+                    <input type="text" id="version" placeholder="Wersja" required>
+                    <input type="url" id="url" placeholder="Link do pliku" required>
+                    <button type="submit">Dodaj</button>
+                </form>
+
+                <h2>Usuń plugin</h2>
+                <form id="delete-form">
+                    <input type="text" id="delete-name" placeholder="Nazwa pluginu" required>
+                    <button type="submit">Usuń</button>
+                </form>
+
+                <h2>Podgląd pluginów</h2>
+                <ul class="plugin-list" id="plugin-list"></ul>
+            `;
+
+            let plugins = JSON.parse(localStorage.getItem("plugins") || "[]");
+
+            function render() {
+                const list = document.getElementById("plugin-list");
+                list.innerHTML = "";
+                plugins.forEach(p => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        <span class="plugin-name">${p.name} - v${p.version}</span>
+                        <a href="${p.url}" class="download-btn" download>Pobierz</a>
+                    `;
+                    list.appendChild(li);
+                });
+                localStorage.setItem("plugins", JSON.stringify(plugins));
             }
-            document.getElementById("status").style.display = "none";
-            plugins.forEach(plugin => {
-                const li = document.createElement("li");
-                const name = document.createElement("span");
-                name.className = "plugin-name";
-                name.textContent = `${plugin.name} - v${plugin.version}`;
-                const downloadLink = document.createElement("a");
-                downloadLink.className = "download-btn";
-                downloadLink.href = plugin.url;
-                downloadLink.textContent = "Pobierz";
-                downloadLink.setAttribute("download", plugin.name);
-                li.appendChild(name);
-                li.appendChild(downloadLink);
-                list.appendChild(li);
+
+            document.getElementById("plugin-form").addEventListener("submit", e => {
+                e.preventDefault();
+                plugins.push({
+                    name: document.getElementById("name").value,
+                    version: document.getElementById("version").value,
+                    url: document.getElementById("url").value
+                });
+                render();
             });
-        }
 
-        fetchPlugins();
+            document.getElementById("delete-form").addEventListener("submit", e => {
+                e.preventDefault();
+                const name = document.getElementById("delete-name").value;
+                plugins = plugins.filter(p => p.name !== name);
+                render();
+            });
+
+            render();
+
+        } else {
+            // 📃 STRONA GŁÓWNA (lista pluginów)
+            document.getElementById("header").textContent = "Lista pluginów";
+            document.getElementById("content").innerHTML = `
+                <h2>Dostępne pluginy</h2>
+                <div id="status" class="loading">Ładowanie pluginów...</div>
+                <ul class="plugin-list" id="plugin-list"></ul>
+            `;
+
+            let plugins = JSON.parse(localStorage.getItem("plugins") || "[]");
+
+            function displayPlugins() {
+                const list = document.getElementById("plugin-list");
+                list.innerHTML = "";
+                if (plugins.length === 0) {
+                    document.getElementById("status").textContent = "Brak dostępnych pluginów.";
+                    return;
+                }
+                document.getElementById("status").style.display = "none";
+                plugins.forEach(plugin => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `
+                        <span class="plugin-name">${plugin.name} - v${plugin.version}</span>
+                        <a href="${plugin.url}" class="download-btn" download>Pobierz</a>
+                    `;
+                    list.appendChild(li);
+                });
+            }
+
+            displayPlugins();
+        }
     </script>
 </body>
 </html>
