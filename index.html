@@ -5,49 +5,20 @@
     <title>back-dev-downloads</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #f9f9f9 0%, #eef7fa 100%);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-        header {
-            background: #fff;
-            color: #333;
-            padding: 2rem 0 1rem 0;
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 500;
-            box-shadow: 0 4px 16px rgba(44,140,240,0.08);
-        }
-        .container {
-            max-width: 600px;
-            margin: 2rem auto;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(44,140,240,0.08);
-            padding: 2rem;
-        }
-        h2 { color: #2d8cf0; margin-bottom: 1rem; }
-        ul.plugin-list { list-style: none; padding: 0; }
-        ul.plugin-list li {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 1.2rem; padding-bottom: 1rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .plugin-name { font-weight: 500; font-size: 1.1rem; color: #333; }
-        .download-btn {
-            background: #2d8cf0; color: #fff; border: none;
-            border-radius: 5px; padding: 0.5rem 1.1rem;
-            cursor: pointer; text-decoration: none;
-        }
-        .download-btn:hover { background: #1d7cd6; }
-        .loading, .error { text-align: center; color: #999; margin-top: 2rem; }
-        form { display: flex; flex-direction: column; gap: 1rem; }
-        input, button { padding: 0.6rem; font-size: 1rem; }
-        button { background: #2d8cf0; color: white; border: none; cursor: pointer; }
-        button:hover { background: #1d7cd6; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg,#f9f9f9 0%,#eef7fa 100%); margin:0; padding:0; min-height:100vh; }
+        header { background:#fff; color:#333; padding:2rem 0 1rem 0; text-align:center; font-size:2rem; font-weight:500; box-shadow:0 4px 16px rgba(44,140,240,0.08); }
+        .container { max-width:600px; margin:2rem auto; background:#fff; border-radius:10px; box-shadow:0 4px 16px rgba(44,140,240,0.08); padding:2rem; }
+        h2 { color:#2d8cf0; margin-bottom:1rem; }
+        ul.plugin-list { list-style:none; padding:0; }
+        ul.plugin-list li { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; padding-bottom:1rem; border-bottom:1px solid #f0f0f0; }
+        .plugin-name { font-weight:500; font-size:1.1rem; color:#333; }
+        .download-btn { background:#2d8cf0; color:#fff; border:none; border-radius:5px; padding:0.5rem 1.1rem; cursor:pointer; text-decoration:none; }
+        .download-btn:hover { background:#1d7cd6; }
+        .loading, .error { text-align:center; color:#999; margin-top:2rem; }
+        form { display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem; }
+        input, button { padding:0.6rem; font-size:1rem; }
+        button { background:#2d8cf0; color:white; border:none; cursor:pointer; }
+        button:hover { background:#1d7cd6; }
     </style>
 </head>
 <body>
@@ -57,8 +28,46 @@
     <script>
         const path = window.location.pathname;
 
-        if (path.includes("admion")) {
-            // 🔑 PANEL ADMINA
+        // Funkcja do wyświetlania listy pluginów
+        function renderPluginList(target, plugins) {
+            const list = document.getElementById(target);
+            list.innerHTML = "";
+            if (!plugins || plugins.length === 0) {
+                list.innerHTML = "<p class='loading'>Brak dostępnych pluginów.</p>";
+                return;
+            }
+            plugins.forEach(plugin => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span class="plugin-name">${plugin.name} - v${plugin.version}</span>
+                    <a href="${plugin.url}" class="download-btn" download>Pobierz</a>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // 📃 STRONA GŁÓWNA
+        if (!path.includes("admion")) {
+            document.getElementById("header").textContent = "Lista pluginów";
+            document.getElementById("content").innerHTML = `
+                <h2>Dostępne pluginy</h2>
+                <div id="status" class="loading">Ładowanie pluginów...</div>
+                <ul class="plugin-list" id="plugin-list"></ul>
+            `;
+
+            fetch("plugins.json")
+                .then(res => res.json())
+                .then(plugins => {
+                    document.getElementById("status").style.display = "none";
+                    renderPluginList("plugin-list", plugins);
+                })
+                .catch(() => {
+                    document.getElementById("status").textContent = "Błąd przy ładowaniu plugins.json";
+                });
+        }
+
+        // 🔑 PANEL ADMINA
+        else {
             document.getElementById("header").textContent = "Panel administracyjny";
             document.getElementById("content").innerHTML = `
                 <h2>Dodaj plugin</h2>
@@ -75,24 +84,16 @@
                     <button type="submit">Usuń</button>
                 </form>
 
-                <h2>Podgląd pluginów</h2>
+                <h2>Podgląd pluginów (zapisane lokalnie)</h2>
                 <ul class="plugin-list" id="plugin-list"></ul>
             `;
 
+            // Wczytaj z localStorage
             let plugins = JSON.parse(localStorage.getItem("plugins") || "[]");
 
-            function render() {
-                const list = document.getElementById("plugin-list");
-                list.innerHTML = "";
-                plugins.forEach(p => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `
-                        <span class="plugin-name">${p.name} - v${p.version}</span>
-                        <a href="${p.url}" class="download-btn" download>Pobierz</a>
-                    `;
-                    list.appendChild(li);
-                });
+            function saveAndRender() {
                 localStorage.setItem("plugins", JSON.stringify(plugins));
+                renderPluginList("plugin-list", plugins);
             }
 
             document.getElementById("plugin-form").addEventListener("submit", e => {
@@ -102,48 +103,17 @@
                     version: document.getElementById("version").value,
                     url: document.getElementById("url").value
                 });
-                render();
+                saveAndRender();
             });
 
             document.getElementById("delete-form").addEventListener("submit", e => {
                 e.preventDefault();
                 const name = document.getElementById("delete-name").value;
                 plugins = plugins.filter(p => p.name !== name);
-                render();
+                saveAndRender();
             });
 
-            render();
-
-        } else {
-            // 📃 STRONA GŁÓWNA (lista pluginów)
-            document.getElementById("header").textContent = "Lista pluginów";
-            document.getElementById("content").innerHTML = `
-                <h2>Dostępne pluginy</h2>
-                <div id="status" class="loading">Ładowanie pluginów...</div>
-                <ul class="plugin-list" id="plugin-list"></ul>
-            `;
-
-            let plugins = JSON.parse(localStorage.getItem("plugins") || "[]");
-
-            function displayPlugins() {
-                const list = document.getElementById("plugin-list");
-                list.innerHTML = "";
-                if (plugins.length === 0) {
-                    document.getElementById("status").textContent = "Brak dostępnych pluginów.";
-                    return;
-                }
-                document.getElementById("status").style.display = "none";
-                plugins.forEach(plugin => {
-                    const li = document.createElement("li");
-                    li.innerHTML = `
-                        <span class="plugin-name">${plugin.name} - v${plugin.version}</span>
-                        <a href="${plugin.url}" class="download-btn" download>Pobierz</a>
-                    `;
-                    list.appendChild(li);
-                });
-            }
-
-            displayPlugins();
+            saveAndRender();
         }
     </script>
 </body>
