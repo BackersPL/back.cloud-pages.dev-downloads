@@ -94,7 +94,7 @@
                 const response = await fetch(apiUrl);
                 if (!response.ok) throw new Error("Unable to load plugins folder.");
                 const files = await response.json();
-                // Filtruj tylko .jar
+                // Filter for .jar files only
                 const jarFiles = files.filter(file => file.type === "file" && file.name.endsWith(".jar"));
                 displayPlugins(jarFiles);
             } catch (err) {
@@ -132,3 +132,5 @@
     </script>
 </body>
 </html>
+
+wyslij mi calosc tutaj z tym tokenem
