@@ -1,19 +1,13 @@
 import { Octokit } from "octokit";
 
-const OWNER = "BackersPL"; // <- Twój nick GitHub
-const REPO = "back.cloud-pages.dev-downloads";        // <- nazwa repo, np. back-dev-downloads
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const OWNER = "BackersPL";
+const REPO = "back.cloud-pages.dev-downloads";
 const FILE_PATH = "plugins/plugins.json";
 const BRANCH = "main";
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-
 async function getFile() {
-  const res = await octokit.rest.repos.getContent({
-    owner: OWNER,
-    repo: REPO,
-    path: FILE_PATH,
-    ref: BRANCH
-  });
+  const res = await octokit.rest.repos.getContent({ owner: OWNER, repo: REPO, path: FILE_PATH, ref: BRANCH });
   const content = Buffer.from(res.data.content, "base64").toString("utf8");
   return { content, sha: res.data.sha };
 }
@@ -33,11 +27,6 @@ async function updateFile(newContent, sha) {
 
 export default async function handler(req, res) {
   try {
-    if (req.method === "GET") {
-      const { content } = await getFile();
-      return res.status(200).json(JSON.parse(content));
-    }
-
     if (req.method === "POST") {
       const { content } = req.body;
       if (!content) return res.status(400).send("Brak content");
@@ -45,7 +34,6 @@ export default async function handler(req, res) {
       await updateFile(content, sha);
       return res.status(200).send("Zapisano plugins.json ✅");
     }
-
     res.status(405).send("Metoda nieobsługiwana");
   } catch (err) {
     console.error(err);
